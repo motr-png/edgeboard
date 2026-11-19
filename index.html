@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EdgeBoard – Sports +EV Dashboard</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#14181f;--mut:#667085;--bd:#e3e6eb;--g:#16a34a;--gb:#dcfce7;--y:#a16207;--yb:#fef9c3;--r:#dc2626;--rb:#fee2e2;--ac:#1d4ed8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1318;--card:#171c24;--tx:#e8ebf0;--mut:#94a0b2;--bd:#283040;--g:#4ade80;--gb:#12351f;--y:#facc15;--yb:#3a3210;--r:#f87171;--rb:#3d1717;--ac:#60a5fa}}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--card);border-bottom:1px solid var(--bd)}
+h1{font-size:18px;margin:0}h1 span{color:var(--ac)}
+.tabs,.days{display:flex;gap:6px;overflow-x:auto}
+.tabs{padding:10px 16px;background:var(--card);border-bottom:1px solid var(--bd)}
+.tab{border:1px solid var(--bd);background:none;color:var(--tx);padding:7px 14px;border-radius:999px;cursor:pointer;white-space:nowrap;font:inherit}
+.tab.on{background:var(--ac);border-color:var(--ac);color:#fff}
+main{max-width:980px;margin:0 auto;padding:16px}
+.note{font-size:13px;color:var(--mut);background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+.subtabs,.chips{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.days{margin-bottom:12px}
+.day{flex:1 0 74px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;padding:7px 4px;cursor:pointer;font:inherit;display:flex;flex-direction:column;align-items:center;line-height:1.25}
+.day span{font-size:11px;color:var(--mut)}.day.on{background:var(--ac);border-color:var(--ac);color:#fff}.day.on span{color:#dbe7ff}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;margin-bottom:12px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+.game{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 14px;margin-bottom:10px;display:grid;grid-template-columns:70px 1fr;gap:4px 12px}
+.time{font-weight:700;font-size:13px;color:var(--mut);padding-top:2px}
+.hd{cursor:pointer;font-weight:600}.hd:hover{color:var(--ac)}.hd small{font-weight:400;color:var(--mut)}
+.side{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:4px 0 4px 8px;margin-top:4px;border-left:5px solid var(--bd);font-size:13px}
+.side.green{border-left-color:var(--g)}.side.yellow{border-left-color:var(--y)}.side.red{border-left-color:var(--r)}
+.nm{flex:1 1 130px;font-weight:600}.pc{width:48px}.fl{width:78px;color:var(--mut)}
+.side input,.calc input{width:96px;padding:5px 6px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--tx);font:inherit}
+.badge{padding:3px 10px;border-radius:999px;font-weight:700;font-size:12px;background:var(--bg);color:var(--mut);min-width:96px;text-align:center}
+.green .badge{background:var(--gb);color:var(--g)}.yellow .badge{background:var(--yb);color:var(--y)}.red .badge{background:var(--rb);color:var(--r)}
+.side .fl{width:auto;min-width:70px}.odds{margin-top:6px;font-size:13px}.odds summary{cursor:pointer;color:var(--ac)}.odds table{border-collapse:collapse;margin:6px 0}.odds td,.odds th{padding:3px 10px 3px 0;text-align:left;font-weight:400}.odds input{width:84px;padding:5px 6px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--tx);font:inherit}
+.pill{padding:2px 9px;border-radius:999px;font-weight:700;font-size:12px;white-space:nowrap}.pill.green{background:var(--gb);color:var(--g)}.pill.yellow{background:var(--yb);color:var(--y)}.pill.red{background:var(--rb);color:var(--r)}.odds td{vertical-align:middle;padding-bottom:5px}
+.calc{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin-top:18px}
+.calc label{margin-right:12px;font-size:13px}
+#chatBtn{position:fixed;top:calc(env(safe-area-inset-top,0px) + 8px);right:12px;z-index:20;background:var(--ac);color:#fff;border:0;border-radius:999px;padding:8px 14px;cursor:pointer;font:inherit}
+#chat{position:fixed;top:calc(env(safe-area-inset-top,0px) + 50px);right:12px;width:min(360px,calc(100% - 24px));height:420px;max-height:70vh;background:var(--card);border:1px solid var(--bd);border-radius:12px;display:none;flex-direction:column;z-index:20;box-shadow:0 8px 30px #0003}
+#chat.open{display:flex}#log{flex:1;overflow:auto;padding:10px;font-size:14px}
+.b{margin:6px 0;padding:8px 10px;border-radius:10px;max-width:90%}.bot{background:var(--bg)}.me{background:var(--ac);color:#fff;margin-left:auto}
+#chat form{display:flex;border-top:1px solid var(--bd)}
+#q{flex:1;border:0;padding:10px;background:none;color:var(--tx);font:inherit;outline:none}
+#chat button.s{border:0;background:none;color:var(--ac);padding:0 12px;cursor:pointer;font:inherit}
+.pay{margin-top:18px;text-align:center;font-size:13px;color:var(--mut)}
+
+.odds table{border-collapse:collapse;margin:6px 0}.hint{color:var(--mut);margin-top:6px}.x{border:0;background:none;color:var(--mut);cursor:pointer;font-size:18px}
+#status{font-size:12px;color:var(--mut);margin-bottom:8px}
+</style></head><body>
+<header><h1>Edge<span>Board</span></h1><span class="note" style="margin:0 110px 0 0;padding:3px 10px">$8.99/mo</span></header>
+<button id="chatBtn">💬 Ask</button>
+<div id="chat"><div id="log"></div><form id="cf"><input id="q" placeholder="Try: best pick, close games, today…" autocomplete="off"><button class="s">Send</button></form></div>
+<div class="tabs" id="tabs"></div>
+<main>
+<div class="note"><b>How it works:</b> enter the line you see at your own sportsbook or app under "Your lines" on any game. EdgeBoard applies the +EV formula and colors it green, yellow or red. Add as many lines as you like and it averages them. Your lines are saved in this browser only.</div>
+<div id="status"></div>
+<div class="subtabs" id="subs"></div>
+<div class="days" id="days"></div>
+<div class="legend"><span><i class="dot" style="background:var(--g)"></i>Green: undervalued, good pick (edge ≥ 3 pts)</span><span><i class="dot" style="background:var(--y)"></i>Yellow: neutral</span><span><i class="dot" style="background:var(--r)"></i>Red: overvalued, pass (edge ≤ –3)</span></div>
+<div style="text-align:right;margin-bottom:8px"><button class="tab" onclick="clearLines()">Clear my lines</button></div>
+<div id="games"></div>
+<div class="calc"><b>+EV calculator</b> (your cheat sheet's formulas)<br><br>
+<label>Benchmark win % <input id="cp" type="number" value="55"></label>
+<label>Moneyline <input id="cm" type="number" value="-110"></label>
+<label>Wager $ <input id="cw" type="number" value="100"></label>
+<div id="cout" style="margin-top:10px"></div></div>
+<div class="pay">Paywall not active in this prototype. Payments need Stripe + a backend.</div>
+</main>
+<script>
+let D={
+NFL:[["2026-11-20T01:15Z","Colts","Texans",12.4,87.6],["2026-11-22T18:00Z","Cardinals","Chiefs",7.4,92.6],["2026-11-22T18:00Z","Saints","Bears",14.2,85.8],["2026-11-22T18:00Z","Buccaneers","Lions",24.3,75.7],["2026-11-22T18:00Z","Titans","Cowboys",22.8,77.2],["2026-11-22T18:00Z","Ravens","Panthers",43.7,56.3],["2026-11-22T18:00Z","Dolphins","Bills",7,93],["2026-11-22T18:00Z","Steelers","Eagles",66.6,33.4],["2026-11-22T21:05Z","Jets","Chargers",37.8,62.2],["2026-11-22T21:25Z","Raiders","Broncos",16.5,83.5],["2026-11-22T21:25Z","Jaguars","Giants",null,null],["2026-11-23T01:20Z","Vikings","49ers",null,null],["2026-11-24T01:15Z","Bengals","Commanders",null,null],["2026-11-26T01:00Z","Packers","Rams",null,null],["2026-11-26T18:00Z","Bears","Lions",null,null]],
+NBA:[["2026-11-19T00:00Z","76ers","Magic",51.6,48.4],["2026-11-19T00:00Z","Grizzlies","Cavaliers",35.5,64.5],["2026-11-19T00:00Z","Rockets","Pacers",69.6,30.4],["2026-11-19T00:00Z","Bucks","Heat",14,86],["2026-11-19T00:30Z","Wizards","Raptors",28.9,71.1],["2026-11-19T00:30Z","Bulls","Nets",43.4,56.6],["2026-11-19T01:00Z","Warriors","Mavericks",32.7,67.3],["2026-11-19T01:00Z","Pistons","Pelicans",71.7,28.3],["2026-11-19T01:00Z","Hawks","Thunder",28.3,71.7],["2026-11-19T02:30Z","Celtics","Nuggets",55,45],["2026-11-19T03:00Z","Suns","Kings",null,null],["2026-11-19T03:00Z","Jazz","Lakers",null,null],["2026-11-20T01:00Z","Knicks","Timberwolves",null,null],["2026-11-20T01:00Z","Clippers","Spurs",null,null],["2026-11-20T01:00Z","Warriors","Grizzlies",null,null]],
+NHL:[["2026-11-19T00:30Z","Bruins","Red Wings",49.7,50.3],["2026-11-19T00:30Z","Canadiens","Devils",40.4,59.6],["2026-11-19T03:00Z","Avalanche","Mammoth",48.9,51.1],["2026-11-20T00:00Z","Kings","Maple Leafs",null,null],["2026-11-20T00:00Z","Flyers","Senators",null,null],["2026-11-20T00:00Z","Islanders","Jets",null,null],["2026-11-20T00:00Z","Blues","Penguins",null,null],["2026-11-20T00:00Z","Canadiens","Hurricanes",null,null],["2026-11-20T00:00Z","Sabres","Capitals",null,null],["2026-11-20T00:30Z","Oilers","Lightning",null,null],["2026-11-20T01:00Z","Blue Jackets","Blackhawks",null,null],["2026-11-20T01:00Z","Wild","Flames",null,null],["2026-11-20T02:00Z","Ducks","Avalanche",null,null],["2026-11-20T02:40Z","Canucks","Kraken",null,null],["2026-11-20T03:00Z","Stars","Golden Knights",null,null]],
+"NCAA FB":[["2026-11-19T00:00Z","Akron","UMass",40.3,59.7],["2026-11-19T00:30Z","Central Michigan","Buffalo",48.5,51.5],["2026-11-20T00:00Z","Northwestern State","Stephen F. Austin",null,null],["2026-11-20T00:00Z","Southeastern Louisiana","Nicholls State",null,null],["2026-11-20T00:30Z","Rice","Temple",42.6,57.4],["2026-11-20T23:00Z","Iowa State","UCF",45.5,54.5],["2026-11-21T00:30Z","Clemson","Duke",14.5,85.5],["2026-11-21T00:30Z","Bowling Green","Toledo",12.2,87.8],["2026-11-21T01:00Z","UTEP","Air Force",5.9,94.1],["2026-11-21T01:00Z","Oregon","Michigan State",88.9,11.1],["2026-11-21T02:00Z","New Mexico","Wyoming",null,null]],
+"NCAA BB":[["2026-11-18T17:00Z","Jackson State","Baylor",0.7,99.3],["2026-11-18T19:00Z","Notre Dame","Rutgers",60.3,39.7],["2026-11-18T21:30Z","Florida","Houston",55.4,44.6],["2026-11-18T23:30Z","Chattanooga","Winthrop",52.9,47.1],["2026-11-18T23:30Z","Tennessee Tech","UNC Asheville",58.7,41.3],["2026-11-18T23:30Z","Samford","USC Upstate",71.8,28.2],["2026-11-18T23:30Z","IU Indy","Penn State",6.5,93.5],["2026-11-18T23:30Z","Detroit Mercy","Eastern Michigan",13.2,86.8],["2026-11-18T23:30Z","Navy","Georgetown",2.3,97.7],["2026-11-19T00:00Z","Elon","South Carolina",null,null],["2026-11-19T00:00Z","Siena","St. John's",null,null],["2026-11-19T00:00Z","Vermont","Yale",null,null],["2026-11-19T00:00Z","James Madison","Towson",null,null],["2026-11-19T00:00Z","FGCU","Florida Atlantic",null,null]],
+MLB:[],
+UFC:[["2026-11-21T15:00Z","Alik Lorenz","Diyar Nurgozhay",null,null],["2026-11-21T15:20Z","Dom Mar Fan","Nikolas Motta",null,null],["2026-11-21T15:40Z","Tahir Abdullayev","Jake Matthews",null,null],["2026-11-21T16:00Z","Alessandro Costa","Amir Albazi",null,null],["2026-11-21T16:20Z","Tallison Teixeira","Shamil Gaziev",null,null],["2026-11-21T18:00Z","Santiago Luna","Aleksandre Topuria",null,null],["2026-11-21T18:20Z","Ikram Aliskerov","Jared Cannonier",null,null],["2026-11-21T18:40Z","Asu Almabayev","Kyoji Horiguchi",null,null],["2026-11-21T19:00Z","Brian Ortega","Daniel Hooker",null,null],["2026-11-21T19:20Z","Kevin Vallejos","Aljamain Sterling",null,null],["2026-11-21T19:40Z","Navajo Stirling","Jiri Prochazka",null,null]]};
+
+let NOTE={NFL:"Full slate through Thanksgiving week.",NBA:"Upcoming games only (live and finished games are hidden).",NHL:"Upcoming games only.","NCAA FB":"Partial list: FBS games with provider data.","NCAA BB":"Partial list of Nov 18-19 games.",MLB:"MLB is in the offseason, so there are no games to show.",UFC:"UFC Fight Night: Prochazka vs. Stirling (Nov 21). Fighter win probabilities aren't in the snapshot yet."};
+let live=null;
+const imp=m=>m>0?100/(m+100):Math.abs(m)/(Math.abs(m)+100);
+const dec=m=>m>0?1+m/100:1+100/Math.abs(m);
+const fair=p=>p>=50?'-'+Math.round(p/(100-p)*100):'+'+Math.round((100-p)/p*100);
+const rate2=(P,pb)=>{const e=P/100-pb;return{e,c:e>=.03?'green':e<=-.03?'red':'yellow',l:e>=.03?'GOOD PICK':e<=-.03?'PASS':'NEUTRAL'}};
+const ev=(p,m,w)=>{const P=p/100,n=w*(dec(m)-1);return{ev:P*n-(1-P)*w,pct:P*dec(m)-1}};
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pd=s=>{const d=new Date(s);return isNaN(d)?new Date(s.replace('Z',':00Z')):d};
+const dk=d=>d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate();
+const SK='edgeboard-lines-v2';
+const O={};try{Object.assign(O,JSON.parse(localStorage.getItem(SK)||'{}'))}catch(e){}
+const saveO=()=>{try{localStorage.setItem(SK,JSON.stringify(O))}catch(e){}};
+// a line is American odds (+150, -120) or a price in cents (40c)
+const impOf=v=>{v=String(v||'').trim();if(!v)return null;const m=v.match(/^(\d+(?:\.\d+)?)\s*(?:\u00a2|c|%)$/i);if(m){const c=parseFloat(m[1]);return c>=1&&c<=99?c/100:null}
+ if(!/^[+-]?\d+$/.test(v))return null;const a=parseInt(v,10);return Math.abs(a)>=100?imp(a):null};
+const lineTxt=v=>/[\u00a2c%]\s*$/i.test(v)?parseFloat(v)+'\u00a2':(parseInt(v,10)>0?'+':'')+parseInt(v,10);
+const gk=g=>cur+'|'+g[0]+'|'+g[1]+'|'+g[2];
+let cur='NFL',view='lines',sel=0,day=0;
+const tabs=document.getElementById('tabs');
+Object.keys(D).forEach(k=>{const b=document.createElement('button');b.className='tab';b.textContent=k;b.onclick=()=>{cur=k;sel=0;day=firstDay();render()};tabs.appendChild(b)});
+const vs=()=>cur==='UFC'?' vs ':' @ ';
+const gl=()=>D[cur].map((g,i)=>({g,i,t:pd(g[0])})).sort((a,b)=>a.t-b.t);
+const tm=t=>t.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+function firstDay(){const all=gl();for(let d=0;d<10;d++){const t=new Date();t.setDate(t.getDate()+d);if(all.some(o=>dk(o.t)===dk(t)))return d}return 0}
+function mkt(g){const L=O[gk(g)]||[],res=[[],[]],best=[null,null];
+ L.forEach((e,n)=>{const pa=impOf(e[0]),ph=impOf(e[1]);if(pa!=null&&ph!=null){const t=pa+ph;res[0].push(pa/t);res[1].push(ph/t)}
+  [pa,ph].forEach((p,s)=>{if(p!=null&&(!best[s]||p<best[s].p))best[s]={p,txt:lineTxt(e[s]),nm:'Line '+(n+1)}})});
+ const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;return{c:[avg(res[0]),avg(res[1])],best}}
+const pillH=r=>`<span class='pill ${r.c}'>${r.l} ${r.e>0?'+':''}${(r.e*100).toFixed(1)}</span>`;
+function linePill(i,n,s){const g=D[cur][i],e=(O[gk(g)]||[])[n]||['',''],c=mkt(g).c[s],P=g[s?4:3]!=null?g[s?4:3]:(c!=null?c*100:null),p=impOf(e[s]);return P!=null&&p!=null?pillH(rate2(P,p)):''}
+function mktCell(i,s){const g=D[cur][i],c=mkt(g).c[s],P=g[s?4:3];return c==null?'<span style="color:var(--mut)">n/a</span>':(c*100).toFixed(1)+'% (fair '+fair(c*100)+') '+(P!=null?pillH(rate2(P,c)):'')}
+function sideHTML(i,s,name,P){const g=D[cur][i],M=mkt(g),k=s==='a'?0:1,c=M.c[k],b=M.best[k];
+ const Pr=P!=null?P:(c!=null?c*100:null),rm=P!=null&&c!=null?rate2(P,c):null,rb=Pr!=null&&b?rate2(Pr,b.p):null,e=rb?100*(Pr/100/b.p-1):0;
+ return `<div class='side ${rm?rm.c:''}' id='s${i}${s}'><span class='nm'>${esc(name)}</span><span class='pc'>${P==null?'n/a':P.toFixed(1)+'%'}</span><span class='fl'>${c==null?'mkt \u2013':'mkt '+(c*100).toFixed(1)+'% (fair '+fair(c*100)+')'}</span>${rm?pillH(rm):''}<span class='fl'>${b?'best '+b.txt+' ('+b.nm+')':'no lines yet'}</span>${rb?pillH(rb)+' <span class=fl>EV '+(e<0?'-':'+')+'$'+Math.abs(e).toFixed(0)+'/100</span>':''}${P==null&&c!=null?'<span class=fl>no benchmark: compared to your market avg</span>':''}</div>`}
+function panelRows(i){const g=D[cur][i],L=(O[gk(g)]&&O[gk(g)].length)?O[gk(g)]:[['','']];
+ return L.map((e,n)=>`<tr><td>Your Line ${n+1}</td>`+[0,1].map(s=>`<td><input data-g='${i}' data-n='${n}' data-s='${s}' value='${esc(e[s])}' placeholder='+150 or 40\u00a2'> <span id='lp${i}_${n}_${s}'>${linePill(i,n,s)}</span></td>`).join('')+`<td>${n>0?`<button class='x' title='Remove' onclick='rmLine(${i},${n})'>\u00d7</button>`:''}</td></tr>`).join('')}
+function oddsPanel(i,g){return `<details class='odds'><summary>Your lines</summary><table><tr><th></th><th>${esc(g[1])}</th><th>${esc(g[2])}</th></tr><tbody id='rows${i}'>${panelRows(i)}</tbody><tr><td><b>Market avg</b></td><td id='m${i}0'>${mktCell(i,0)}</td><td id='m${i}1'>${mktCell(i,1)}</td></tr></table><button class='tab' onclick='addLine(${i})'>+ Add another line</button><div class='hint'>Enter odds from any sportsbook or app: American (+150, -120) or a price in cents (40\u00a2). Each color compares the benchmark win % to that line's implied %. Saved in this browser only.</div></details>`}
+function refresh(i){const g=D[cur][i],L=O[gk(g)]||[];
+ L.forEach((e,n)=>[0,1].forEach(s=>{const el=document.getElementById('lp'+i+'_'+n+'_'+s);if(el)el.innerHTML=linePill(i,n,s)}));
+ [0,1].forEach(s=>{const el=document.getElementById('m'+i+s);if(el)el.innerHTML=mktCell(i,s);const r=document.getElementById('s'+i+(s?'h':'a'));if(r)r.outerHTML=sideHTML(i,s?'h':'a',g[s?2:1],g[s?4:3])})}
+function addLine(i){const k=gk(D[cur][i]),L=O[k]=O[k]&&O[k].length?O[k]:[['','']];L.push(['','']);saveO();document.getElementById('rows'+i).innerHTML=panelRows(i)}
+function rmLine(i,n){const k=gk(D[cur][i]);if(O[k]){O[k].splice(n,1);saveO();document.getElementById('rows'+i).innerHTML=panelRows(i);refresh(i)}}
+function clearLines(){if(!confirm('Clear all lines you entered?'))return;Object.keys(O).forEach(k=>delete O[k]);saveO();render()}
+document.getElementById('games').addEventListener('input',e=>{const d=e.target.dataset;if(d.g===undefined)return;const i=+d.g,k=gk(D[cur][i]),L=O[k]=O[k]||[['','']];while(L.length<=+d.n)L.push(['','']);L[+d.n][+d.s]=e.target.value;saveO();refresh(i)});
+function openGame(i){view='props';sel=i;render();scrollTo(0,0)}
+function render(){
+ [...tabs.children].forEach(b=>b.classList.toggle('on',b.textContent===cur));
+ document.getElementById('subs').innerHTML=[['lines','Lines'],['props','Player Props']].map(([v,n])=>`<button class='tab ${view===v?'on':''}' onclick="view='${v}';render()">${n}</button>`).join('');
+ const all=gl(),el=document.getElementById('games');
+ document.getElementById('days').innerHTML=view==='props'?'':Array.from({length:10},(_,d)=>{const t=new Date();t.setDate(t.getDate()+d);const n=all.filter(o=>dk(o.t)===dk(t)).length;return `<button class='day ${d===day?'on':''}' onclick='day=${d};render()'><b>${d?d===1?'Tomorrow':t.toLocaleDateString('en-US',{weekday:'short'}):'Today'}</b><span>${t.toLocaleDateString('en-US',{month:'short',day:'numeric'})} \u00b7 ${n}</span></button>`}).join('');
+ document.getElementById('status').textContent=live?'Schedule updated '+new Date(live).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'Schedule: snapshot from Nov 17, 2026 (live updates need the hosted version).';
+ if(view==='props'){const o=all.find(x=>x.i===sel)||all[0];
+  if(!o){el.innerHTML=`<div class='note'>${NOTE[cur]||'No games.'}</div>`;return}
+  const g=o.g;el.innerHTML=`<div class='chips'>${all.slice(0,12).map(x=>`<button class='tab ${x.i===o.i?'on':''}' onclick='openGame(${x.i})'>${esc(x.g[1])}${vs()}${esc(x.g[2])}</button>`).join('')}</div><div class='note'><b>${esc(g[1])}${vs()}${esc(g[2])}</b> \u00b7 ${o.t.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})} ${tm(o.t)}<br><br>Player prop lines aren't available yet. For now, enter a prop's benchmark win % and your line in the calculator below to get a green/yellow/red rating.</div>`;return}
+ const d0=new Date();d0.setDate(d0.getDate()+day);const list=all.filter(o=>dk(o.t)===dk(d0));
+ el.innerHTML=(list.length?'':`<div class='note'>No ${cur} games on this day. ${NOTE[cur]||''}</div>`)+list.map(o=>{const g=o.g;
+  return `<div class="game"><div class="time">${tm(o.t)}</div><div><div class="hd" onclick="openGame(${o.i})">${esc(g[1])}${vs()}${esc(g[2])} <small>\u00b7 tap for props</small></div>${sideHTML(o.i,'a',g[1],g[3])}${sideHTML(o.i,'h',g[2],g[4])}${oddsPanel(o.i,g)}</div></div>`}).join('')+(list.length&&NOTE[cur]?`<div class='note'>${NOTE[cur]}</div>`:'')}
+function calc(){const p=+cp.value,m=+cm.value,w=+cw.value;if(!p||!m||!w){cout.textContent='';return}const x=ev(p,m,w),r=rate2(p,imp(m));
+ cout.innerHTML=`Fair line: <b>${fair(p)}</b> \u00b7 Line implied: <b>${(imp(m)*100).toFixed(1)}%</b> \u00b7 EV: <b>${x.ev<0?'-':'+'}$${Math.abs(x.ev).toFixed(2)}</b> (${(x.pct*100).toFixed(1)}%) \u00b7 <b style="color:var(--${r.c[0]})">${r.l}</b>`}
+['cp','cm','cw'].forEach(i=>document.getElementById(i).oninput=calc);
+const chat=document.getElementById('chat'),log=document.getElementById('log'),qEl=document.getElementById('q');
+chatBtn.onclick=()=>{chat.classList.toggle('open');if(!log.children.length)say('bot','Hi! Ask about the '+cur+' board: best pick, close games, today\'s games, or what the colors mean.')};
+function say(c,t){const d=document.createElement('div');d.className='b '+c;d.textContent=t;log.appendChild(d);log.scrollTop=log.scrollHeight}
+cf.onsubmit=e=>{e.preventDefault();const q=qEl.value.trim().toLowerCase();if(!q)return;say('me',qEl.value);qEl.value='';
+ const rows=gl().filter(o=>o.g[3]!=null);let a;const nm=o=>o.g[1]+vs()+o.g[2];
+ if(/best|favorite|safest|top/.test(q)){if(!rows.length)a='No benchmark probabilities for '+cur+' yet.';else{const o=rows.sort((x,y)=>Math.max(y.g[3],y.g[4])-Math.max(x.g[3],x.g[4]))[0],h=o.g[4]>o.g[3];a=`Biggest ${cur} favorite: ${h?o.g[2]:o.g[1]} at ${Math.max(o.g[3],o.g[4]).toFixed(1)}% (${nm(o)}). Win probability alone isn't value. Enter your line to see the rating.`}}
+ else if(/close|even|toss/.test(q)){if(!rows.length)a='No benchmark probabilities for '+cur+' yet.';else{const o=rows.sort((x,y)=>Math.abs(x.g[3]-50)-Math.abs(y.g[3]-50))[0];a=`Closest ${cur} matchup: ${nm(o)} (${o.g[3].toFixed(1)}% / ${o.g[4].toFixed(1)}%).`}}
+ else if(/today|game|schedule|tonight/.test(q)){const d=new Date(),n=gl().filter(o=>dk(o.t)===dk(d)).length;a=n?`${n} ${cur} game(s) today.`:`No ${cur} games today. Use the day strip to browse the next 10 days.`}
+ else if(/green|yellow|red|mean|color/.test(q))a='Green: the benchmark win % beats the line\'s implied % by 3+ pts. Yellow: within 3 pts. Red: the line is 3+ pts worse than the benchmark, so pass.';
+ else if(/weather|injur|momentum|average|stat/.test(q))a='Weather, injuries, momentum and averages need a live data backend, which this version does not have yet.';
+ else a='I can answer: best pick, close games, today\'s games, and what the colors mean.';
+ say('bot',a)};
+async function loadLive(){try{const r=await fetch('/api/games',{cache:'no-store'});if(!r.ok)return;const j=await r.json();if(!j||!j.games)return;
+ Object.keys(j.games).forEach(k=>{if(k in D)D[k]=j.games[k]});NOTE={};live=j.updated;day=firstDay();render()}catch(e){}}
+day=firstDay();render();calc();loadLive();
+</script></body></html>
